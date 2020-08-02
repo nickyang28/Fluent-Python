@@ -65,7 +65,7 @@ class Vector:
         return outer_fmt.format(*components)
 
     def __hash__(self):
-        return hash(self.x) ^ hash(self.y)
+        return hash(self.x) ^ hash(self.y) ^ hash(abs(self))
 
 
 if __name__ == "__main__":
@@ -78,3 +78,7 @@ if __name__ == "__main__":
     print(v1 == v1_clone)
     print(format(v1, '.3f'))
     print(hash(v1))
+    v2 = Vector(1, 6)
+    print({v1, v2})
+    v3 = Vector.frombytes(bytes(v1))
+    print(v3)
