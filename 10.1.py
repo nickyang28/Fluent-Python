@@ -30,12 +30,17 @@ class Vector:
         return bytes([ord(self.typecode)]) + bytes(self._components)
 
     def __eq__(self, other):
-        if len(self) != len(other):
-            return False
-        for a, b in zip(self, other):
-            if a != b:
-                return False
-        return True
+        if isinstance(other, Vector):
+            return (len(self) == len(other)) and all(a == b for a, b in zip(self, other))
+        else:
+            return NotImplemented
+
+    def __ne__(self, other):
+        eq_result = self == other
+        if eq_result is NotImplemented:
+            return NotImplemented
+        else:
+            return not eq_result
 
     def __hash__(self):
         hashes = map(hash, self._components)
@@ -105,6 +110,40 @@ class Vector:
         components = (format(c, format_spec) for c in coords)
         return outer_fmt.format(', '.join(components))
 
+    def __neg__(self):
+        return Vector(-x for x in self)
+
+    def __pos__(self):
+        return Vector(self)
+
+    def __add__(self, other):
+        try:
+            pairs = itertools.zip_longest(self, other, fillvalue=0.0)
+            return Vector(a + b for a, b in pairs)
+        except TypeError:
+            return NotImplemented
+
+    def __radd__(self, other):
+        return self + other
+
+    def __mul__(self, other):
+        if isinstance(other, numbers.Real):
+            return Vector(n * other for n in self)
+        else:
+            return NotImplemented
+
+    def __rmul__(self, other):
+        return self * other
+
+    def __matmul__(self, other):
+        try:
+            return sum(a * b for a, b in zip(self, other))
+        except TypeError:
+            return NotImplemented
+
+    def __rmatmul__(self, other):
+        return self @ other
+
     @classmethod
     def frombytes(cls, octets):
         typecode = chr(octets[0])
@@ -113,9 +152,7 @@ class Vector:
 
 
 if __name__ == '__main__':
-    v7 = Vector(range(7))
-    print(v7[-1])
-    print(v7[1:4])
-    print(v7[-1:])
-    v7.x = 10.0
-
+    v1 = Vector([3, 4, 5, 6])
+    v2 = Vector([1, 2, 3, 4])
+    print(v1 @ v2)
+    print(v1 == v2)
