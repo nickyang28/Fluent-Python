@@ -156,3 +156,5 @@ if __name__ == '__main__':
     v2 = Vector([1, 2, 3, 4])
     print(v1 @ v2)
     print(v1 == v2)
+    v1 += v2
+    print(v1)
